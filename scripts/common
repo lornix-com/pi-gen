@@ -33,7 +33,12 @@ copy_previous(){
 		false
 	fi
 	mkdir -p "${ROOTFS_DIR}"
-	rsync -aHAXx --exclude var/cache/apt/archives "${PREV_ROOTFS_DIR}/" "${ROOTFS_DIR}/"
+	## rsync -aHAXx --exclude var/cache/apt/archives "${PREV_ROOTFS_DIR}/" "${ROOTFS_DIR}/"
+        # copy all attributes, xattr, etc, as hard links to dest directory,
+        # saves about 9G or so of space in all 5 stages. archives removal
+        # afterwards is cheaper than trying to make cp exclude folders
+        cp -alux "${PREV_ROOTFS_DIR}" "${ROOTFS_DIR}/../"
+	rm -rf "${ROOTFS_DIR}/var/cache/apt/archives/"
 }
 export -f copy_previous
 
